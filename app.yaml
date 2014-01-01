@@ -1,10 +1,14 @@
-application: repostats
-version: 1
+application: ga-beacon
+version: 11
 runtime: go
 api_version: go1
 
 default_expiration: "1d"
 
 handlers:
+- url: /favicon\.ico
+  static_files: static/favicon.ico
+  upload: static/favicon\.ico
+
 - url: /.*
   script: _go_app

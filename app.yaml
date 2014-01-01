@@ -1,0 +1,10 @@
+application: repostats
+version: 1
+runtime: go
+api_version: go1
+
+default_expiration: "1d"
+
+handlers:
+- url: /.*
+  script: _go_app

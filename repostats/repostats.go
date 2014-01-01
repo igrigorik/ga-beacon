@@ -2,12 +2,13 @@ package stats
 
 import (
   "appengine"
-  // "appengine/urlfetch"
-  "html/template"
+  "appengine/urlfetch"
   "encoding/base64"
-  // "crypto/md5"
+  "html/template"
+  "hash/fnv"
   "net/http"
   "strings"
+  "net/url"
   "io"
 )
 
@@ -44,6 +45,27 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
     output, _ := base64.StdEncoding.DecodeString(base64GifPixel)
     io.WriteString(w, string(output))
+
+    go func(){
+      h := fnv.New32a()
+      h.Write([]byte(strings.Split(r.RemoteAddr,":")[0])) // IP address
+      h.Write([]byte(r.Header.Get("User-Agent")))
+      cid := h.Sum32()
+
+      client := urlfetch.Client(c)
+      resp, err := client.PostForm("http://www.google-analytics.com/collect",
+          url.Values{
+            "v": {"1"},           // protocol version = 1
+            "t": {"pageview"},    // hit type
+            "tid": {params[0]},   // tracking / property ID
+            "cid": {string(cid)}, // unique client ID (IP + UA hash)
+        })
+
+      if err != nil {
+        c.Errorf("GA collector POST error: %s", err.Error())
+      }
+      c.Infof("GA collector status: %v, cid: %v", resp.Status, cid)
+    }()
   }
 
   c.Infof("Params size: %v, %v", len(params), params)

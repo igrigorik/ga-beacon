@@ -4,6 +4,7 @@
 
 **Curious which of your GitHub projects are getting all the traffic, or if anyone is reading your GitHub wiki pages?** Well, that's what Google Analytics is for! GitHub does not allow us to install arbitrary analytics, but we can still use a simple tracking image to log visits in real-time to Google Analytics - for full details, follow the instructions below. Once everything is setup, install [this custom dashboard](https://www.google.com/analytics/web/template?uid=MQS4cmZdSh2OWUVqRntqXQ) in your account for a nice real-time overview (as shown in above screenshot).
 
+
 ### Setup instructions
 
 First, log in to your Google Analytics account and [set up a new property](https://support.google.com/analytics/answer/1042508?hl=en):
@@ -13,7 +14,7 @@ First, log in to your Google Analytics account and [set up a new property](https
 * **WebSite URL: https://ga-beacon.appspot.com/ (important)**
 * Click "Get Tracking ID", copy the `UA-XXXXX-X` ID on next page.
 
-Now, just add a tracking image to the page you want to track: 
+Next, add a tracking image to the pages you want to track: 
 
 * _https://ga-beacon.appspot.com/UA-XXXXX-X/repo-name/page-name_
 * `UA-XXXXX-X` should be your tracking ID
@@ -46,6 +47,6 @@ And that's it, add the tracker image to the pages you want to track and then hea
 
 - **Can I use this outside of GitHub?** Yep, you certainly can. It's a generic beacon service.
 
-#### Misc
+----
 
-* (MIT License) - Copyright (c) 2014 Ilya Grigorik
+(MIT License) - Copyright (c) 2014 Ilya Grigorik

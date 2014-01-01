@@ -1,6 +1,6 @@
 # Google Analytics for GitHub [![Analytics](https://ga-beacon.appspot.com/UA-71196-10/ga-beacon/readme?pixel)](https://github.com/igrigorik/ga-beacon)
 
-[![GA Dashboard](https://www.evernote.com/shard/s1/sh/badbd5bb-228c-4304-8235-9bac60f6094e/a7c4a77d30584ada89b08fcd3b4c11d3/res/a6daea21-c886-497f-b906-f8bf6465a9b2/skitch.png)](https://www.evernote.com/shard/s1/sh/badbd5bb-228c-4304-8235-9bac60f6094e/a7c4a77d30584ada89b08fcd3b4c11d3/res/a6daea21-c886-497f-b906-f8bf6465a9b2/skitch.png)
+[![GA Dashboard](https://lh5.googleusercontent.com/-Zu9r9m7Uv0c/UsSQlJ5OoeI/AAAAAAAAHwo/fvH_lrVUV0w/w1007-h467-no/skitch.png)](https://lh5.googleusercontent.com/-Zu9r9m7Uv0c/UsSQlJ5OoeI/AAAAAAAAHwo/fvH_lrVUV0w/w1007-h467-no/skitch.png)
 
 **Curious which of your GitHub projects are getting all the traffic, or if anyone is reading your GitHub wiki pages?** Well, that's what Google Analytics is for! GitHub does not allow us to install arbitrary analytics, but we can still use a simple tracking image to log visits in real-time to Google Analytics - for full details, follow the instructions below. Once everything is setup, install [this custom dashboard](https://www.google.com/analytics/web/template?uid=MQS4cmZdSh2OWUVqRntqXQ) in your account for a nice real-time overview (as shown in above screenshot).
 

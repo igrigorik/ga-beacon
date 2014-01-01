@@ -10,7 +10,7 @@ First, log in to your Google Analytics account and [set up a new property](https
 * Select "Website", use new "Universal Analytics" tracking
 * Website name: anything you want (e.g. GitHub projects)
 * **WebSite URL: https://ga-beacon.appspot.com/ (important)**
-* Click "Get Tracking ID", copy the UA-XXXXX-X id on next page.
+* Click "Get Tracking ID", copy the `UA-XXXXX-X` id on next page.
 
 Now, just add a tracking image to the page you want to track: https://ga-beacon.appspot.com/UA-XXXXX-X/repo-name/page
 
@@ -36,7 +36,7 @@ And that's it, add the tracker image to the pages you want to track and then hea
 
 ### FAQ
 
-- **How does this work?** GitHub does not allow arbitrary JavaScript to run on its pages. As a result, we can't use standard analytics snippets to track visitors and pageviews. However, Google Analytics provides a measurement protocol which allows us to POST the visit data directly to Google servers, and that's exactly what GA Beacon does: we include an image request on our pages which hits the GA Beacon service, and GA Beacon POST's the visit to Google Analytics and returns the pixel.
+- **How does this work?** GitHub does not allow arbitrary JavaScript to run on its pages. As a result, we can't use standard analytics snippets to track visitors and pageviews. However, Google Analytics provides a [measurement protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide) which allows us to POST the visit data directly to Google servers, and that's exactly what GA Beacon does: we include an image request on our pages which hits the GA Beacon service, and GA Beacon POST's the visit to Google Analytics to record the visit.
 
 - **What about referrals and other visitor information?** Unfortunately we can't get all the same information via a tracking pixel. For example, referral information is only available on the GitHub page itself and can't be passed to the tracking pixel. As a result, the available metrics are restricted to unique visitors, pageviews, and the User-Agent of the visitor.
 

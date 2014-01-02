@@ -2,13 +2,13 @@ package beacon
 
 import (
 	"fmt"
-	"hash/fnv"
 	"html/template"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"net/url"
 	"strings"
+	"crypto/rand"
+	"encoding/hex"
 
 	"appengine"
 	"appengine/urlfetch"
@@ -32,6 +32,18 @@ func mustReadFile(path string) []byte {
 		panic(err)
 	}
 	return b
+}
+
+func generateUUID() string {
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(err)
+	}
+
+	b[8] = (b[8] | 0x80) & 0xBF // what's the purpose ?
+	b[6] = (b[6] | 0x40) & 0x4F // what's the purpose ?
+	return hex.EncodeToString(b)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -59,16 +71,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// /account/page -> GIF + log pageview to GA collector
-
-	hash := fnv.New32a()
-	if host, _, err := net.SplitHostPort(r.RemoteAddr); err != nil {
-		hash.Write([]byte(host))
+	var cid string
+	if cookie, err := r.Cookie("cid"); err != nil {
+		cid = generateUUID()
+		http.SetCookie(w, &http.Cookie{Name: "cid", Value: cid, Path: fmt.Sprint("/", params[0])})
 	} else {
-		c.Errorf("could not parse addr: %q", r.RemoteAddr)
-		hash.Write([]byte(r.RemoteAddr))
+		cid = cookie.Value
+		c.Debugf("Existing CID found: %v", cid)
 	}
-	hash.Write([]byte(r.Header.Get("User-Agent")))
-	cid := fmt.Sprintf("%d", hash.Sum32())
 
 	w.Header().Set("Content-Type", "image/gif")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -79,7 +89,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		"v":   {"1"},        // protocol version = 1
 		"t":   {"pageview"}, // hit type
 		"tid": {params[0]},  // tracking / property ID
-		"cid": {cid},        // unique client ID (IP + UA hash)
+		"cid": {cid},        // unique client ID (server generated UUID)
 		"dp":  {params[1]},  // page path
 	}
 

@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 
 	"appengine"
+	"appengine/delay"
 	"appengine/urlfetch"
 )
 
@@ -83,7 +84,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/gif")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("CID", cid)
+	
+	collectFunc.call(c, r, params, cid)
 
+	// Write out GIF pixel or badge, based on presence of "pixel" param.
+	query, _ := url.ParseQuery(r.URL.RawQuery)
+	if _, ok := query["pixel"]; ok {
+		w.Write(pixel)
+	} else {
+		w.Write(badge)
+	}
+}
+
+var collectFunc = delay.Func("collectHit", func(c appengine.Context, r *http.Request, params []string, cid string) error {
 	// https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
 	payload := url.Values{
 		"v":   {"1"},        // protocol version = 1
@@ -99,15 +112,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	if resp, err := urlfetch.Client(c).Do(req); err != nil {
 		c.Errorf("GA collector POST error: %s", err.Error())
-	} else {
-		c.Debugf("GA collector status: %v, cid: %v", resp.Status, cid)
+		return err
 	}
-
-	// Write out GIF pixel or badge, based on presence of "pixel" param.
-	query, _ := url.ParseQuery(r.URL.RawQuery)
-	if _, ok := query["pixel"]; ok {
-		w.Write(pixel)
-	} else {
-		w.Write(badge)
-	}
-}
+	
+	c.Debugf("GA collector status: %v, cid: %v", resp.Status, cid)
+	return nil
+})

@@ -35,16 +35,17 @@ func mustReadFile(path string) []byte {
 	return b
 }
 
-func generateUUID() string {
+func generateUUID(cid *string) error {
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	b[8] = (b[8] | 0x80) & 0xBF // what's the purpose ?
 	b[6] = (b[6] | 0x40) & 0x4F // what's the purpose ?
-	return hex.EncodeToString(b)
+	*cid = hex.EncodeToString(b)
+	return nil
 }
 
 var delayHit = delay.Func("collect", logHit)
@@ -69,7 +70,6 @@ func logHit(c appengine.Context, params []string, ua string, cid string) error {
 	} else {
 		c.Debugf("GA collector status: %v, cid: %v", resp.Status, cid)
 	}
-
 	return nil
 }
 
@@ -100,19 +100,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// /account/page -> GIF + log pageview to GA collector
 	var cid string
 	if cookie, err := r.Cookie("cid"); err != nil {
-		cid = generateUUID()
-		http.SetCookie(w, &http.Cookie{Name: "cid", Value: cid, Path: fmt.Sprint("/", params[0])})
+		if err := generateUUID(&cid); err != nil {
+			c.Debugf("Failed to generate client UUID: %v", err)
+		} else {
+			c.Debugf("Generated new client UUID: %v", cid)
+			http.SetCookie(w, &http.Cookie{Name: "cid", Value: cid, Path: fmt.Sprint("/", params[0])})
+		}
 	} else {
 		cid = cookie.Value
 		c.Debugf("Existing CID found: %v", cid)
 	}
 
-	w.Header().Set("Content-Type", "image/gif")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("CID", cid)
+	if len(cid) != 0 {
+		w.Header().Set("Content-Type", "image/gif")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("CID", cid)
 
-	// logHit(c, params, r.Header.Get("User-Agent"), cid)
-	delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
+		// logHit(c, params, r.Header.Get("User-Agent"), cid)
+		delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
+	}
 
 	// Write out GIF pixel or badge, based on presence of "pixel" param.
 	query, _ := url.ParseQuery(r.URL.RawQuery)
@@ -122,4 +128,3 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Write(badge)
 	}
 }
-

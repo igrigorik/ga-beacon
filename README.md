@@ -46,7 +46,3 @@ And that's it, add the tracker image to the pages you want to track and then hea
 - **What about referrals and other visitor information?** Unfortunately the static tracking pixel approach limits the information we can collect about the visit. For example, referral information is only available on the GitHub page itself and can't be passed to the tracking pixel. As a result, the available metrics are restricted to unique visitors, pageviews, and the User-Agent of the visitor.
 
 - **Can I use this outside of GitHub?** Yep, you certainly can. It's a generic beacon service.
-
-----
-
-(MIT License) - Copyright (c) 2014 Ilya Grigorik

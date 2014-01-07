@@ -4,6 +4,8 @@
 
 **Curious which of your GitHub projects are getting all the traffic, or if anyone is reading your GitHub wiki pages?** Well, that's what Google Analytics is for! GitHub does not allow us to install arbitrary analytics, but we can still use a simple tracking image to log visits in real-time to Google Analytics - for full details, follow the instructions below. Once everything is setup, install [this custom dashboard](https://www.google.com/analytics/web/template?uid=MQS4cmZdSh2OWUVqRntqXQ) in your account for a nice real-time overview (as shown in above screenshot).
 
+_Note: GitHub [finally released traffic analytics](https://github.com/blog/1672-introducing-github-traffic-analytics) on Jan 7, 2014 -- wohoo! As a result, you can get most of the important insights by simply using that. If you still want real-time analytics, or an integration with your existing GA analytics, then you can use both the tracking pixel and built-in analytics._
+
 
 ### Setup instructions
 

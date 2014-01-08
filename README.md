@@ -1,4 +1,9 @@
-# Google Analytics for GitHub [![Analytics](https://ga-beacon.appspot.com/UA-71196-10/ga-beacon/readme?pixel)](https://github.com/igrigorik/ga-beacon)
+# Google Analytics Beacon [![Analytics](https://ga-beacon.appspot.com/UA-71196-10/ga-beacon/readme?pixel)](https://github.com/igrigorik/ga-beacon)
+
+Sometimes it is impossible to embed the JavaScript tracking code provided by Google Analytics: the host page does not allow arbitrary JavaScript, and there is no Google Analytics integration. However, not all is lost! **If you can embed a simple image (pixel tracker), then you can beacon data to Google Analytics.** For a great, hands-on explanation of how this works, check out [Using a Beacon Image for GitHub, Website and Email Analytics](http://www.sitepoint.com/using-beacon-image-github-website-email-analytics/). 
+
+
+### Hands-on example: Google Analytics for GitHub 
 
 [![GA Dashboard](https://lh5.googleusercontent.com/-Zu9r9m7Uv0c/UsSQlJ5OoeI/AAAAAAAAHwo/fvH_lrVUV0w/w1007-h467-no/skitch.png)](https://lh5.googleusercontent.com/-Zu9r9m7Uv0c/UsSQlJ5OoeI/AAAAAAAAHwo/fvH_lrVUV0w/w1007-h467-no/skitch.png)
 
@@ -47,4 +52,6 @@ And that's it, add the tracker image to the pages you want to track and then hea
 
 - **What about referrals and other visitor information?** Unfortunately the static tracking pixel approach limits the information we can collect about the visit. For example, referral information is only available on the GitHub page itself and can't be passed to the tracking pixel. As a result, the available metrics are restricted to unique visitors, pageviews, and the User-Agent of the visitor.
 
-- **Can I use this outside of GitHub?** Yep, you certainly can. It's a generic beacon service.
+- **Can I use this outside of GitHub?** Yep, [you certainly can](http://www.sitepoint.com/using-beacon-image-github-website-email-analytics/). It's a generic beacon service.
+
+- **Do I have to use ga-beacon.appspot.com?** You can if you want to - it's free. Alternatively, feel free to deploy your own instance directly on Google App Engine. The project is under MIT license.

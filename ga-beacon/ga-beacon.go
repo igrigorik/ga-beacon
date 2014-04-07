@@ -19,7 +19,7 @@ const beaconURL = "http://www.google-analytics.com/collect"
 
 var (
 	pixel        = mustReadFile("static/pixel.gif")
-	badge        = mustReadFile("static/badge.gif")
+	badge        = mustReadFile("static/badge.svg")
 	pageTemplate = template.Must(template.New("page").ParseFiles("ga-beacon/page.html"))
 )
 
@@ -112,19 +112,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(cid) != 0 {
-		w.Header().Set("Content-Type", "image/gif")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("CID", cid)
 
-		// logHit(c, params, r.Header.Get("User-Agent"), cid)
-		delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
+		logHit(c, params, r.Header.Get("User-Agent"), cid)
+		// delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
 	}
 
 	// Write out GIF pixel or badge, based on presence of "pixel" param.
 	query, _ := url.ParseQuery(r.URL.RawQuery)
 	if _, ok := query["pixel"]; ok {
+		w.Header().Set("Content-Type", "image/gif")
 		w.Write(pixel)
 	} else {
+		w.Header().Set("Content-Type", "image/svg+xml")
 		w.Write(badge)
 	}
 }

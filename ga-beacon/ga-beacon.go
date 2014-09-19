@@ -1,14 +1,14 @@
 package beacon
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
-	"crypto/rand"
-	"encoding/hex"
 
 	"appengine"
 	"appengine/delay"

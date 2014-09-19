@@ -50,7 +50,7 @@ func generateUUID(cid *string) error {
 
 var delayHit = delay.Func("collect", logHit)
 
-func logHit(c appengine.Context, params []string, ua string, cid string) error {
+func logHit(c appengine.Context, params []string, ua string, ip string, cid string) error {
 	// https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
 	payload := url.Values{
 		"v":   {"1"},        // protocol version = 1
@@ -58,6 +58,7 @@ func logHit(c appengine.Context, params []string, ua string, cid string) error {
 		"tid": {params[0]},  // tracking / property ID
 		"cid": {cid},        // unique client ID (server generated UUID)
 		"dp":  {params[1]},  // page path
+		"uip": {ip},         // IP address of the user
 	}
 
 	req, _ := http.NewRequest("POST", beaconURL, strings.NewReader(payload.Encode()))
@@ -68,7 +69,7 @@ func logHit(c appengine.Context, params []string, ua string, cid string) error {
 		c.Errorf("GA collector POST error: %s", err.Error())
 		return err
 	} else {
-		c.Debugf("GA collector status: %v, cid: %v", resp.Status, cid)
+		c.Debugf("GA collector status: %v, cid: %v, ip: %s", resp.Status, cid, ip)
 	}
 	return nil
 }
@@ -115,7 +116,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("CID", cid)
 
-		logHit(c, params, r.Header.Get("User-Agent"), cid)
+		logHit(c, params, r.Header.Get("User-Agent"), r.RemoteAddr, cid)
 		// delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
 	}
 

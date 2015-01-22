@@ -51,17 +51,7 @@ func generateUUID(cid *string) error {
 
 var delayHit = delay.Func("collect", logHit)
 
-func logHit(c appengine.Context, params []string, ua string, ip string, cid string) error {
-	// https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
-	payload := url.Values{
-		"v":   {"1"},        // protocol version = 1
-		"t":   {"pageview"}, // hit type
-		"tid": {params[0]},  // tracking / property ID
-		"cid": {cid},        // unique client ID (server generated UUID)
-		"dp":  {params[1]},  // page path
-		"uip": {ip},         // IP address of the user
-	}
-
+func log(c appengine.Context, params []string, ua string, ip string, cid string payload Values) error {
 	req, _ := http.NewRequest("POST", beaconURL, strings.NewReader(payload.Encode()))
 	req.Header.Add("User-Agent", ua)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -75,9 +65,40 @@ func logHit(c appengine.Context, params []string, ua string, ip string, cid stri
 	return nil
 }
 
+func logHit(c appengine.Context, params []string, ua string, ip string, cid string) error {
+	// https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
+	payload := url.Values{
+		"v":   {"1"},        // protocol version = 1
+		"t":   {"pageview"}, // hit type
+		"tid": {params[0]},  // tracking / property ID
+		"cid": {cid},        // unique client ID (server generated UUID)
+		"dp":  {params[1]},  // page path
+		"uip": {ip},         // IP address of the user
+	}
+	return log(c, params, ua, ip, cid, payload)
+}
+
+func logEvent(c appengine.Context, params []string, query map[string]string, ua string, ip string, cid string) error {
+	https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#events
+	payload := url.Values{
+		"v":   {"1"},        // protocol version = 1
+		"t":   {"event"},    // hit type
+		"tid": {params[0]},  // tracking / property ID
+		"cid": {cid},        // unique client ID (server generated UUID)
+		"uip": {ip},         // IP address of the user
+		"ec":  {query["category"]},  // event Category
+		"ea":  {query["action"]},    // event Action
+		"el":  {query["label"]},     // event Label
+		"ev":  {query["value"]},     // event Value
+	}
+	return log(c, params, ua, ip, cid, payload)
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	params := strings.SplitN(strings.Trim(r.URL.Path, "/"), "/", 2)
+	query, _ := url.ParseQuery(r.URL.RawQuery)
+	isEvent := params[0] == "event"
 
 	// / -> redirect
 	if len(params[0]) == 0 {
@@ -86,7 +107,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// /account -> account template
-	if len(params) == 1 {
+	 if len(params) == 1 && !isEvent {
 		templateParams := struct {
 			Account string
 		}{
@@ -117,12 +138,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("CID", cid)
 
-		logHit(c, params, r.Header.Get("User-Agent"), r.RemoteAddr, cid)
+		if (isEvent) {
+			logEvent(c, params, query, r.Header.Get("User-Agent"), r.RemoteAddr, cid)
+		} else {
+			logHit(c, params, r.Header.Get("User-Agent"), r.RemoteAddr, cid)
+		}
 		// delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
 	}
 
 	// Write out GIF pixel or badge, based on presence of "pixel" param.
-	query, _ := url.ParseQuery(r.URL.RawQuery)
 	if _, ok := query["pixel"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
 		w.Write(pixel)

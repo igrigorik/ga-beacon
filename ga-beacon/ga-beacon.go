@@ -21,6 +21,8 @@ var (
 	pixel        = mustReadFile("static/pixel.gif")
 	badge        = mustReadFile("static/badge.svg")
 	badgeGif     = mustReadFile("static/badge.gif")
+	badgeFlat    = mustReadFile("static/badge-flat.svg")
+	badgeFlatGif = mustReadFile("static/badge-flat.gif")
 	pageTemplate = template.Must(template.New("page").ParseFiles("ga-beacon/page.html"))
 )
 
@@ -142,6 +144,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	} else if _, ok := query["gif"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
 		w.Write(badgeGif)
+	} else if _, ok := query["flat"]; ok {
+		w.Header().Set("Content-Type", "image/svg+xml")
+		w.Write(badgeFlat)
+	} else if _, ok := query["flat-gif"]; ok {
+		w.Header().Set("Content-Type", "image/gif")
+		w.Write(badgeFlatGit)
 	} else {
 		w.Header().Set("Content-Type", "image/svg+xml")
 		w.Write(badge)

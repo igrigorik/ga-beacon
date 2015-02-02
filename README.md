@@ -6,7 +6,7 @@ Sometimes it is impossible to embed the JavaScript tracking code provided by Goo
 * [Tracking Google Sheet views with Google Analytics using GA Beacon](http://mashe.hawksey.info/2014/02/tracking-google-sheet-views-with-google-analytics/)
 
 
-### Hands-on example: Google Analytics for GitHub 
+### Hands-on example: Google Analytics for GitHub
 
 _Note: GitHub [released traffic analytics](https://github.com/blog/1672-introducing-github-traffic-analytics) on Jan 7, 2014 and provides deeper analytics (e.g. referrer tracking) than what is possible via GA-Beacon. If you're interested in analytics for your GitHub project, use that... That said, if you want real-time analytics, or want to see a demo of what's possible with a tracking pixel, see below._
 
@@ -45,6 +45,8 @@ Or RDoc:
 ```
 
 If you prefer, you can skip the badge and use a transparent pixel. To do so, simply append `?pixel` to the image URL.
+
+There are also "flat" style variants available, which are available when appending `?flat` or `?flat-gif` to the image URL.
 
 And that's it, add the tracker image to the pages you want to track and then head to your Google Analytics account to see real-time and aggregated visit analytics for your projects!
 

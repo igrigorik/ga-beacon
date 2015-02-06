@@ -149,7 +149,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Write(badgeFlat)
 	} else if _, ok := query["flat-gif"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(badgeFlatGit)
+		w.Write(badgeFlatGif)
 	} else {
 		w.Header().Set("Content-Type", "image/svg+xml")
 		w.Write(badge)

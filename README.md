@@ -18,7 +18,7 @@ Next, add a tracking image to the pages you want to track:
 
 * _https://ga-beacon.appspot.com/UA-XXXXX-X/insert/any/path_
 * `UA-XXXXX-X` should be your tracking ID
-* `insert/any/path` is an arbitrary path. For best results specify a meningful and self-descriptive path. You have to do this manually, the beacon won't automatically record the page path it's embedded on.
+* `insert/any/path` is an arbitrary path. For best results specify a meaningful and self-descriptive path. You have to do this manually, the beacon won't automatically record the page path it's embedded on.
 
 Example tracker markup if you are using Markdown:
 

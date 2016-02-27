@@ -103,16 +103,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	// /account -> account template
 	if len(params) == 1 {
-		templateParams := struct {
-			Account string
-		}{
-			Account: params[0],
+		refOrg := r.Header.Get("Referer")
+		referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1);
+		if len(referer) != 0 {
+			params = strings.SplitN(strings.Trim(r.URL.Path, "/") + "/" + referer, "/", 2)
+		} else {
+			templateParams := struct {
+				Account string
+				Referer string
+			}{
+				Account: params[0],
+				Referer: refOrg,
+			}
+			if err := pageTemplate.ExecuteTemplate(w, "page.html", templateParams); err != nil {
+				http.Error(w, "could not show account page", 500)
+				c.Errorf("Cannot execute template: %v", err)
+			}
+			return
 		}
-		if err := pageTemplate.ExecuteTemplate(w, "page.html", templateParams); err != nil {
-			http.Error(w, "could not show account page", 500)
-			c.Errorf("Cannot execute template: %v", err)
-		}
-		return
 	}
 
 	// /account/page -> GIF + log pageview to GA collector

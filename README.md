@@ -34,6 +34,7 @@ Or RDoc:
 
 If you prefer, you can skip the badge and use a transparent pixel. To do so, simply append `?pixel` to the image URL. There are also "flat" style variants available, which are available when appending `?flat` or `?flat-gif` to the image URL. And that's it, add the tracker image to the pages you want to track and then head to your Google Analytics account to see real-time and aggregated visit analytics for your projects!
 
+You may also auto-calculate the tracking path based in the "referrer" information of the image. To activate this simple add `?useReferrer` to the image URL (or `&useReferrer` if you need to combine this with the `?pixel`, `?flat` or `?flat-gif` parameter). Although they are some odd browsers that don't always send the referrer, the amount of traffic coming from those browsers is usually not relevant at all. Of course that if you need to measure the traffic from those odd browsers you should not use this method.
 
 ### FAQ
 

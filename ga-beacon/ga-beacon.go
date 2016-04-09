@@ -102,11 +102,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// activate referrer path if ?useReferrer is used and if referer exists
-	if _, ok := query["useReferrer"]; ok {
+	// activate referrer path if ?useReferer is used and if referer exists
+	if _, ok := query["useReferer"]; ok {
 		if len(refOrg) != 0 {
 			referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1);
 			if len(referer) != 0 {
+				// if the useReferer is present and the referer information exists
+				//  the path is ignored and the beacon referer information is used instead.
 				params = strings.SplitN(strings.Trim(r.URL.Path, "/") + "/" + referer, "/", 2)
 			}
 		}

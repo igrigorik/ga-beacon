@@ -94,6 +94,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	params := strings.SplitN(strings.Trim(r.URL.Path, "/"), "/", 2)
 	query, _ := url.ParseQuery(r.URL.RawQuery)
+	refOrg := r.Header.Get("Referer")
 
 	// / -> redirect
 	if len(params[0]) == 0 {
@@ -101,12 +102,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// activate referrer path if ?useReferer is used and if referer exists
+	if _, ok := query["useReferer"]; ok {
+		if len(refOrg) != 0 {
+			referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1);
+			if len(referer) != 0 {
+				// if the useReferer is present and the referer information exists
+				//  the path is ignored and the beacon referer information is used instead.
+				params = strings.SplitN(strings.Trim(r.URL.Path, "/") + "/" + referer, "/", 2)
+			}
+		}
+	}
 	// /account -> account template
 	if len(params) == 1 {
 		templateParams := struct {
 			Account string
+			Referer string
 		}{
 			Account: params[0],
+			Referer: refOrg,
 		}
 		if err := pageTemplate.ExecuteTemplate(w, "page.html", templateParams); err != nil {
 			http.Error(w, "could not show account page", 500)

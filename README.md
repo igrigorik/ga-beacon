@@ -5,6 +5,12 @@ Sometimes it is impossible to embed the JavaScript tracking code provided by Goo
 * [Using a Beacon Image for GitHub, Website and Email Analytics](http://www.sitepoint.com/using-beacon-image-github-website-email-analytics/)
 * [Tracking Google Sheet views with Google Analytics using GA Beacon](http://mashe.hawksey.info/2014/02/tracking-google-sheet-views-with-google-analytics/)
 
+### Can I use this production?
+
+The ga-beacon.appspot.com instance is a **demo** instance, good for prototyping and proof of concepts. If you intend to use this in production for your application, you should deploy **your own instance** of this service, which will allow you to scale the service up and down to meet your capacity needs, introspect the logs, customize the code, and so on.
+
+Deploying your own instance is trivial: fork this repo, modify the project name in app.yaml, and follow the [normal GAE deploy instructions](https://cloud.google.com/appengine/training/go-plus-appengine/deploy). You should be up and running in less than five minutes.
+
 ### Setup instructions
 
 First, log in to your Google Analytics account and [set up a new property](https://support.google.com/analytics/answer/1042508?hl=en):

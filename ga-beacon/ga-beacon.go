@@ -144,7 +144,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(cid) != 0 {
-		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Cache-Control", "private, no-store")
 		w.Header().Set("CID", cid)
 
 		logHit(c, params, query, r.Header.Get("User-Agent"), r.RemoteAddr, cid)

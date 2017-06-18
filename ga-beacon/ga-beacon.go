@@ -144,9 +144,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(cid) != 0 {
-		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Cache-Control", "private, no-store")
 		w.Header().Set("CID", cid)
-		w.Header().Set("Expires", "Wed, 07 Jun 2017 19:47:34 GMT")
 
 		logHit(c, params, query, r.Header.Get("User-Agent"), r.RemoteAddr, cid)
 		// delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)

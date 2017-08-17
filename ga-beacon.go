@@ -23,7 +23,7 @@ var (
 	badgeGif     = mustReadFile("static/badge.gif")
 	badgeFlat    = mustReadFile("static/badge-flat.svg")
 	badgeFlatGif = mustReadFile("static/badge-flat.gif")
-	pageTemplate = template.Must(template.New("page").ParseFiles("ga-beacon/page.html"))
+	pageTemplate = template.Must(template.New("page").ParseFiles("page.html"))
 )
 
 func init() {

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"appengine"
 	"appengine/delay"
@@ -105,11 +106,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// activate referrer path if ?useReferer is used and if referer exists
 	if _, ok := query["useReferer"]; ok {
 		if len(refOrg) != 0 {
-			referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1);
+			referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1)
 			if len(referer) != 0 {
 				// if the useReferer is present and the referer information exists
 				//  the path is ignored and the beacon referer information is used instead.
-				params = strings.SplitN(strings.Trim(r.URL.Path, "/") + "/" + referer, "/", 2)
+				params = strings.SplitN(strings.Trim(r.URL.Path, "/")+"/"+referer, "/", 2)
 			}
 		}
 	}
@@ -144,7 +145,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(cid) != 0 {
-		w.Header().Set("Cache-Control", "private, no-store")
+		var cacheUntil = time.Now().Format(http.TimeFormat)
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Expires", cacheUntil)
 		w.Header().Set("CID", cid)
 
 		logHit(c, params, query, r.Header.Get("User-Agent"), r.RemoteAddr, cid)

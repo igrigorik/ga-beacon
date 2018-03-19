@@ -146,7 +146,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	if len(cid) != 0 {
 		var cacheUntil = time.Now().Format(http.TimeFormat)
-		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate, private")
 		w.Header().Set("Expires", cacheUntil)
 		w.Header().Set("CID", cid)
 

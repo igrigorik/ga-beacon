@@ -1,5 +1,4 @@
-runtime: go
-api_version: go1
+runtime: go113
 
 default_expiration: "1d"
 

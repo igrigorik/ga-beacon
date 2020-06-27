@@ -8,4 +8,4 @@ handlers:
   upload: static/favicon\.ico
 
 - url: /.*
-  script: _go_app
+  script: auto

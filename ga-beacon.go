@@ -17,7 +17,7 @@ import (
 	"google.golang.org/appengine/delay"
 )
 
-const beaconURL = "http://www.google-analytics.com/collect"
+const beaconURL = "https://www.google-analytics.com/collect"
 
 var (
 	pixel        = mustReadFile("static/pixel.gif")

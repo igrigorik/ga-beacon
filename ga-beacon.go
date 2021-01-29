@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-const beaconURL = "http://www.google-analytics.com/collect"
+var beaconURL = "http://www.google-analytics.com/collect"
 
 var (
 	pixel        = mustReadFile("static/pixel.gif")

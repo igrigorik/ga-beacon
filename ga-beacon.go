@@ -68,17 +68,17 @@ func sendToGA(c context.Context, ua string, ip string, cid string, values url.Va
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("POST", beaconURL, strings.NewReader(values.Encode()))
-	req.Header.Add("User-Agent", ua)
+	if ua != "" {
+		req.Header.Add("User-Agent", ua)
+	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	if resp, err := client.Do(req); err != nil {
 		log.Printf("GA collector POST error: %s", err.Error())
-		return err
 	} else {
 		log.Printf("GA collector status: %v, cid: %v, ip: %s", resp.Status, cid, ip)
 		log.Printf("Reported payload: %v", values)
 	}
-	return nil
 }
 
 func logHit(c context.Context, params []string, query url.Values, ua string, ip string, cid string) {
@@ -93,7 +93,10 @@ func logHit(c context.Context, params []string, query url.Values, ua string, ip 
 		"tid": {params[0]},  // tracking / property ID
 		"cid": {cid},        // unique client ID (server generated UUID)
 		"dp":  {params[1]},  // page path
-		"uip": {ip},         // IP address of the user
+	}
+
+	if ip != "" {
+		payload["uip"] = []string{ip} // IP address of the user
 	}
 
 	for key, val := range query {

@@ -13,11 +13,9 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"google.golang.org/appengine/delay"
 )
 
-const beaconURL = "http://www.google-analytics.com/collect"
+var beaconURL = "http://www.google-analytics.com/collect"
 
 var (
 	pixel        = mustReadFile("static/pixel.gif")
@@ -64,26 +62,26 @@ func generateUUID(cid *string) error {
 	return nil
 }
 
-var delayHit = delay.Func("collect", logHit)
+// var delayHit = delay.Func("collect", logHit)
 
-func sendToGA(c context.Context, ua string, ip string, cid string, values url.Values) error {
+func sendToGA(c context.Context, ua string, ip string, cid string, values url.Values) {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("POST", beaconURL, strings.NewReader(values.Encode()))
-	req.Header.Add("User-Agent", ua)
+	if ua != "" {
+		req.Header.Add("User-Agent", ua)
+	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	if resp, err := client.Do(req); err != nil {
 		log.Printf("GA collector POST error: %s", err.Error())
-		return err
 	} else {
 		log.Printf("GA collector status: %v, cid: %v, ip: %s", resp.Status, cid, ip)
 		log.Printf("Reported payload: %v", values)
 	}
-	return nil
 }
 
-func logHit(c context.Context, params []string, query url.Values, ua string, ip string, cid string) error {
+func logHit(c context.Context, params []string, query url.Values, ua string, ip string, cid string) {
 	// 1) Initialize default values from path structure
 	// 2) Allow query param override to report arbitrary values to GA
 	//
@@ -95,14 +93,17 @@ func logHit(c context.Context, params []string, query url.Values, ua string, ip 
 		"tid": {params[0]},  // tracking / property ID
 		"cid": {cid},        // unique client ID (server generated UUID)
 		"dp":  {params[1]},  // page path
-		"uip": {ip},         // IP address of the user
+	}
+
+	if ip != "" {
+		payload["uip"] = []string{ip} // IP address of the user
 	}
 
 	for key, val := range query {
 		payload[key] = val
 	}
 
-	return sendToGA(c, ua, ip, cid, payload)
+	sendToGA(c, ua, ip, cid, payload)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -119,14 +120,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	// activate referrer path if ?useReferer is used and if referer exists
 	if _, ok := query["useReferer"]; ok {
-		if len(refOrg) != 0 {
-			referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1)
-			if len(referer) != 0 {
-				// if the useReferer is present and the referer information exists
-				//  the path is ignored and the beacon referer information is used instead.
-				params = strings.SplitN(strings.Trim(r.URL.Path, "/")+"/"+referer, "/", 2)
-			}
+		referer := strings.Replace(strings.Replace(refOrg, "http://", "", 1), "https://", "", 1)
+
+		if referer == "" {
+			http.Error(w, "could not extract referer from headers", http.StatusBadRequest)
+			return
 		}
+
+		// if the useReferer is present and the referer information exists
+		//  the path is ignored and the beacon referer information is used instead.
+		params = strings.SplitN(strings.Trim(r.URL.Path, "/")+"/"+referer, "/", 2)
 	}
 	// /account -> account template
 	if len(params) == 1 {
@@ -138,7 +141,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			Referer: refOrg,
 		}
 		if err := pageTemplate.ExecuteTemplate(w, "page.html", templateParams); err != nil {
-			http.Error(w, "could not show account page", 500)
+			http.Error(w, "could not show account page", http.StatusInternalServerError)
 			log.Printf("Cannot execute template: %v", err)
 		}
 		return
@@ -168,21 +171,27 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		// delayHit.Call(c, params, r.Header.Get("User-Agent"), cid)
 	}
 
+	var err error
+
 	// Write out GIF pixel or badge, based on presence of "pixel" param.
 	if _, ok := query["pixel"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(pixel)
+		_, err = w.Write(pixel)
 	} else if _, ok := query["gif"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(badgeGif)
+		_, err = w.Write(badgeGif)
 	} else if _, ok := query["flat"]; ok {
 		w.Header().Set("Content-Type", "image/svg+xml")
-		w.Write(badgeFlat)
+		_, err = w.Write(badgeFlat)
 	} else if _, ok := query["flat-gif"]; ok {
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(badgeFlatGif)
+		_, err = w.Write(badgeFlatGif)
 	} else {
 		w.Header().Set("Content-Type", "image/svg+xml")
-		w.Write(badge)
+		_, err = w.Write(badge)
+	}
+
+	if err != nil {
+		log.Print(err)
 	}
 }

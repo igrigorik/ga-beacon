@@ -7,3 +7,4 @@ _cgo_*
 _test*
 *.out
 _obj
+ga-beacon

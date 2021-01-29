@@ -13,8 +13,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"google.golang.org/appengine/delay"
 )
 
 const beaconURL = "http://www.google-analytics.com/collect"
@@ -64,7 +62,7 @@ func generateUUID(cid *string) error {
 	return nil
 }
 
-var delayHit = delay.Func("collect", logHit)
+// var delayHit = delay.Func("collect", logHit)
 
 func sendToGA(c context.Context, ua string, ip string, cid string, values url.Values) {
 	client := &http.Client{}

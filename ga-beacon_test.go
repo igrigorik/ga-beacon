@@ -142,7 +142,7 @@ func TestBeacon(t *testing.T) {
 		assert.Equal(t, "image/svg+xml", res.Header.Get("Content-Type"))
 		assert.Equal(t, readFile(t, "static/badge-flat.svg"), readAll(t, res.Body))
 	})
-	t.Run("badge flag gif", func(t *testing.T) {
+	t.Run("badge flat gif", func(t *testing.T) {
 		res := testTrackRequest(t, defaultTID, defaultDP, "", newRequest(t, defaultURL+"?flat-gif"))
 		assert.Equal(t, "image/gif", res.Header.Get("Content-Type"))
 		assert.Equal(t, readFile(t, "static/badge-flat.gif"), readAll(t, res.Body))

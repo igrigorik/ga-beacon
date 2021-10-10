@@ -21,6 +21,13 @@ First, log in to your Google Analytics account and [set up a new property](https
 * **WebSite URL: https://ga-beacon.appspot.com/**
 * Click "Get Tracking ID", copy the `UA-XXXXX-X` ID on next page
 
+```shell
+gcloud auth login
+gcloud auth list
+gcloud config set project <<project>>
+gcloud app deploy
+
+```
 Next, add a tracking image to the pages you want to track:
 
 * _https://ga-beacon.appspot.com/UA-XXXXX-X/insert/any/path_

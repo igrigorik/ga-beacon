@@ -1,0 +1,63 @@
+name: Auto Format
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  auto-format:
+    runs-on: ubuntu-latest
+    container: osodevops/build-harness:latest
+    steps:
+      # Checkout the pull request branch
+      #  "An action in a workflow run can’t trigger a new workflow run. For example, if an action pushes code using
+      #   the repository’s GITHUB_TOKEN, a new workflow will not run even when the repository contains
+      #   a workflow configured to run when push events occur."
+      # However, using a personal access token will cause events to be triggered.
+      # We need that to ensure a status gets posted after the auto-format commit.
+      # We also want to trigger tests if the auto-format made no changes.
+      - uses: actions/checkout@v2
+        if: github.event.pull_request.state == 'open'
+        name: Privileged Checkout
+        with:
+          token: ${{ secrets.TOPBOT_PUBLIC_REPO_ACCESS_TOKEN }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          # Check out the PR commit, not the merge commit
+          # Use `ref` instead of `sha` to enable pushing back to `ref`
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      # Do all the formatting stuff
+      - name: Auto Format
+        if: github.event.pull_request.state == 'open'
+        shell: bash
+        env:
+          GITHUB_TOKEN: "${{ secrets.TOPBOT_PUBLIC_REPO_ACCESS_TOKEN }}"
+        run: make BUILD_HARNESS_PATH=/build-harness PACKAGES_PREFER_HOST=true -f /build-harness/templates/Makefile.build-harness pr/readme/host
+
+      # Commit changes (if any) to the PR branch
+      - name: Commit changes to the PR branch
+        if: github.event.pull_request.state == 'open'
+        shell: bash
+        id: commit
+        env:
+          SENDER: ${{ github.event.sender.login }}
+        run: |
+          set -x
+          output=$(git diff --name-only)
+
+          if [ -n "$output" ]; then
+            echo "Changes detected. Pushing to the PR branch"
+            git config --global user.name 'osotopbot'
+            git config --global user.email '72751587+osotopbot@users.noreply.github.com'
+            git add -A
+            git commit -m "Auto Format"
+            # Prevent looping by not pushing changes in response to changes from cloudpossebot
+            [[ $SENDER ==  "osotopbot" ]] || git push
+            # Set status to fail, because the push should trigger another status check,
+            # and we use success to indicate the checks are finished.
+            printf "::set-output name=%s::%s\n" "changed" "true"
+            exit 1
+          else
+            printf "::set-output name=%s::%s\n" "changed" "false"
+            echo "No changes detected"
+          fi

@@ -1,9 +1,13 @@
-*.6
-*.8
-*.o
-*.so
-*.cgo?.*
-_cgo_*
-_test*
-*.out
-_obj
+# Compiled files
+*.tfstate
+*.tfstate.backup
+
+# Module directory
+.terraform
+.idea
+*.iml
+
+.build-harness
+build-harness
+
+test.log

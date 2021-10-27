@@ -10,4 +10,12 @@
 .build-harness
 build-harness
 
-test.log
+*.6
+*.8
+*.o
+*.so
+*.cgo?.*
+_cgo_*
+_test*
+*.out
+_obj

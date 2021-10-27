@@ -1,0 +1,79 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name: "Jenkins CJOC running on Docker"
+
+# Short description of this project
+description: |-
+  Jenkins Operations Center, (CJOC) which is used to manage multiple Jenkins masters.
+
+# Canonical GitHub repo
+github_repo: osodevops/docker-jenkins-cjoc
+
+# How to use this project
+usage: |-
+  ### Jenkins Master
+  Build and start a node from [here](https://github.com/osodevops/docker-jenkins-master)
+
+
+# Example usage
+examples: |-
+  Follow this example using docker compose to get up and running:
+  ```yaml
+      version: '2'
+      services:
+        cjoc:
+          container_name: jeninfra_cjoc
+          build: jenkins_cjoc
+          hostname: cjoc
+          #environment:
+          #  - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+          ports:
+           - "8888:8080"
+           - "5000:5000"
+
+        jenkins:
+          container_name: jeninfra_master01
+          build: jenkins_master
+          hostname: master
+          #image: cloudbees/jenkins-enterprise:1.651.21.1
+          ports:
+           - "8080:8080"
+          extra_hosts:
+           - "dockerhost:$DOCKERHOST"
+          links:
+           - cjoc:cjoc
+
+        node:
+         build: jenkins_slave
+         #image: jenkins_slave
+         links:
+           - cjoc:cjoc
+           - jenkins:jenkins
+         extra_hosts:
+          - "dockerhost:$DOCKERHOST"
+
+        mechanize:
+         container_name: jeninfra_mechanize
+         build: jenkins_mechanize
+         hostname: mechanize
+         depends_on:
+           - jenkins
+           - cjoc
+         #image: jenkins_slave
+         links:
+           - cjoc:cjoc
+           - jenkins:jenkins
+   ```
+
+related:
+  - name: "Jenkins Slave Node running in Docker"
+    description: "The Jenkins master acts to schedule the jobs and assign slaves and send builds to slaves to execute the jobs."
+    url: "https://github.com/osodevops/docker-jenkins-slave"
+  - name: "Jenkins Master running in Docker"
+    description: "A Jenkins master comes with the basic installation of Jenkins"
+    url: "https://github.com/osodevops/docker-jenkins-master"

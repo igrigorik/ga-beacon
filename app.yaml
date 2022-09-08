@@ -1,4 +1,4 @@
-runtime: go113
+runtime: go116
 
 default_expiration: "1d"
 

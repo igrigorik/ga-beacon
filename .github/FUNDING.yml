@@ -1,0 +1,12 @@
+# These are supported funding model platforms
+
+github: [scriptex]
+patreon: atanas
+open_collective: # Replace with a single Open Collective username
+ko_fi: scriptex
+tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
+community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
+liberapay: scriptex
+issuehunt: scriptex
+otechie: # Replace with a single Otechie username
+custom: ['paypal.me/scriptex', 'revolut.me/scriptex']

@@ -1,4 +1,4 @@
-package main
+package gabeacon
 
 import (
 	"context"
@@ -28,7 +28,7 @@ var (
 )
 
 func main() {
-	http.HandleFunc("/", Handler)
+	http.HandleFunc("/", GaBeacon)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -104,7 +104,7 @@ func logHit(c context.Context, params []string, query url.Values, ua string, ip 
 	return sendToGA(c, ua, ip, cid, payload)
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func GaBeacon(w http.ResponseWriter, r *http.Request) {
 	c := r.Context()
 	params := strings.SplitN(strings.Trim(r.URL.Path, "/"), "/", 2)
 	query, _ := url.ParseQuery(r.URL.RawQuery)
